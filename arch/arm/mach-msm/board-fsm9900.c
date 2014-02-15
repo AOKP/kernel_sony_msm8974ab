@@ -35,6 +35,7 @@ void __init fsm9900_reserve(void)
 {
 }
 
+<<<<<<< HEAD
 static void __init fsm9900_early_memory(void)
 {
 }
@@ -67,6 +68,8 @@ static struct clock_init_data msm_dummy_clock_init_data __initdata = {
 	.size = ARRAY_SIZE(msm_clocks_dummy),
 };
 
+=======
+>>>>>>> 07eb939... msm: Remove memory hole scanning
 /*
  * Used to satisfy dependencies for devices that need to be
  * run early or in a particular order. Most likely your device doesn't fall
@@ -94,16 +97,12 @@ void __init fsm9900_init(void)
 	fsm9900_add_drivers();
 }
 
-void __init fsm9900_init_very_early(void)
-{
-	fsm9900_early_memory();
-}
-
 static const char *fsm9900_dt_match[] __initconst = {
 	"qcom,fsm9900",
 	NULL
 };
 
+<<<<<<< HEAD
 DT_MACHINE_START(FSM9900_DT, "Qualcomm FSM 9900 (Flattened Device Tree)")
 	.map_io = fsm9900_map_io,
 	.init_irq = msm_dt_init_irq,
@@ -115,4 +114,13 @@ DT_MACHINE_START(FSM9900_DT, "Qualcomm FSM 9900 (Flattened Device Tree)")
 	.init_very_early = fsm9900_init_very_early,
 	.restart = msm_restart,
 	.smp = &msm8974_smp_ops,
+=======
+DT_MACHINE_START(FSM9900_DT,
+		"Qualcomm Technologies, Inc. FSM 9900 (Flattened Device Tree)")
+	.map_io			= fsm9900_map_io,
+	.init_machine		= fsm9900_init,
+	.dt_compat		= fsm9900_dt_match,
+	.reserve		= fsm9900_reserve,
+	.smp			= &msm8974_smp_ops,
+>>>>>>> 07eb939... msm: Remove memory hole scanning
 MACHINE_END

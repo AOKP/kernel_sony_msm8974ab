@@ -73,11 +73,6 @@ void __init msmsamarium_reserve(void)
 	of_scan_flat_dt(dt_scan_for_memory_reserve, NULL);
 }
 
-static void __init msmsamarium_early_memory(void)
-{
-	of_scan_flat_dt(dt_scan_for_memory_hole, NULL);
-}
-
 /*
  * Used to satisfy dependencies for devices that need to be
  * run early or in a particular order. Most likely your device doesn't fall
@@ -110,16 +105,12 @@ void __init msmsamarium_init(void)
 	msmsamarium_add_drivers();
 }
 
-void __init msmsamarium_init_very_early(void)
-{
-	msmsamarium_early_memory();
-}
-
 static const char *msmsamarium_dt_match[] __initconst = {
 	"qcom,msmsamarium",
 	NULL
 };
 
+<<<<<<< HEAD
 DT_MACHINE_START(MSMSAMARIUM_DT, "Qualcomm MSM Samarium(Flattened Device Tree)")
 	.map_io = msmsamarium_map_io,
 	.init_irq = msm_dt_init_irq,
@@ -131,4 +122,14 @@ DT_MACHINE_START(MSMSAMARIUM_DT, "Qualcomm MSM Samarium(Flattened Device Tree)")
 	.init_very_early = msmsamarium_init_very_early,
 	.restart = msm_restart,
 	.smp = &msm8974_smp_ops,
+=======
+DT_MACHINE_START(MSMSAMARIUM_DT,
+	"Qualcomm Technologies, Inc. MSM Samarium(Flattened Device Tree)")
+	.map_io			= msmsamarium_map_io,
+	.init_machine		= msmsamarium_init,
+	.dt_compat		= msmsamarium_dt_match,
+	.reserve		= msmsamarium_reserve,
+	.restart		= msm_restart,
+	.smp			= &msm8962_smp_ops,
+>>>>>>> 07eb939... msm: Remove memory hole scanning
 MACHINE_END

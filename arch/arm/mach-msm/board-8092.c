@@ -35,10 +35,17 @@
 #include "clock.h"
 #include "platsmp.h"
 
+<<<<<<< HEAD
 static void __init mpq8092_early_memory(void)
 {
 	of_scan_flat_dt(dt_scan_for_memory_hole, NULL);
 }
+=======
+#define MPQ8092_MAC_FUSE_PHYS     0xfc4bc0e0
+#define MPQ8092_MAC_FUSE_SIZE     0x10
+
+static const char mac_addr_prop_name[] = "mac-address";
+>>>>>>> 07eb939... msm: Remove memory hole scanning
 
 static void __init mpq8092_dt_reserve(void)
 {
@@ -83,6 +90,7 @@ static const char *mpq8092_dt_match[] __initconst = {
 	NULL
 };
 
+<<<<<<< HEAD
 DT_MACHINE_START(MSM8092_DT, "Qualcomm MSM 8092 (Flattened Device Tree)")
 	.map_io = mpq8092_map_io,
 	.init_irq = msm_dt_init_irq_nompm,
@@ -93,4 +101,13 @@ DT_MACHINE_START(MSM8092_DT, "Qualcomm MSM 8092 (Flattened Device Tree)")
 	.reserve = mpq8092_dt_reserve,
 	.init_very_early = mpq8092_early_memory,
 	.smp = &msm8974_smp_ops,
+=======
+DT_MACHINE_START(MSM8092_DT,
+		"Qualcomm Technologies, Inc. MSM 8092 (Flattened Device Tree)")
+	.map_io			= mpq8092_map_io,
+	.init_machine		= mpq8092_init,
+	.dt_compat		= mpq8092_dt_match,
+	.reserve		= mpq8092_dt_reserve,
+	.smp			= &msm8974_smp_ops,
+>>>>>>> 07eb939... msm: Remove memory hole scanning
 MACHINE_END
