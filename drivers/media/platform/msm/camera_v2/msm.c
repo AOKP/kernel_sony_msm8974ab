@@ -1,4 +1,5 @@
-/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2013 Sony Mobile Communications AB.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -29,8 +30,6 @@
 #include "msm.h"
 #include "msm_vb2.h"
 #include "msm_sd.h"
-#include <media/msmb_generic_buf_mgr.h>
-
 
 static struct v4l2_device *msm_v4l2_dev;
 static struct list_head    ordered_sd_list;
@@ -506,7 +505,6 @@ static void msm_remove_session_cmd_ack_q(struct msm_session *session)
 int msm_destroy_session(unsigned int session_id)
 {
 	struct msm_session *session;
-	struct v4l2_subdev *buf_mgr_subdev;
 
 	session = msm_queue_find(msm_session_q, struct msm_session,
 		list, __msm_queue_find_session, &session_id);
@@ -518,12 +516,6 @@ int msm_destroy_session(unsigned int session_id)
 	mutex_destroy(&session->lock);
 	msm_delete_entry(msm_session_q, struct msm_session,
 		list, session);
-	buf_mgr_subdev = msm_buf_mngr_get_subdev();
-	if (buf_mgr_subdev) {
-		v4l2_subdev_call(buf_mgr_subdev, core, ioctl,
-			MSM_SD_SHUTDOWN, NULL);
-	} else
-		pr_err("%s: Buff manger device node is NULL\n", __func__);
 
 	return 0;
 }
@@ -671,6 +663,9 @@ int msm_post_event(struct v4l2_event *event, int timeout)
 	struct msm_command *cmd;
 	int session_id, stream_id;
 	unsigned long flags = 0;
+#if defined(CONFIG_SONY_CAM_V4L2)
+	uint32_t retry_count = 0;
+#endif
 
 	session_id = event_data->session_id;
 	stream_id = event_data->stream_id;
@@ -715,6 +710,25 @@ int msm_post_event(struct v4l2_event *event, int timeout)
 	}
 
 	/* should wait on session based condition */
+#if defined(CONFIG_SONY_CAM_V4L2)
+	retry_count = 5000;
+	do {
+		rc = wait_event_interruptible_timeout(cmd_ack->wait,
+			!list_empty_careful(&cmd_ack->command_q.list),
+			msecs_to_jiffies(timeout));
+		retry_count--;
+		if (rc != -ERESTARTSYS)
+			break;
+		pr_debug("%s: wait_event interrupted by signal, count = %d",
+				__func__, retry_count);
+		msleep(20);
+	} while (retry_count > 0);
+
+	if (rc == -ERESTARTSYS) {
+		pr_err("%s: rc = %d\n", __func__, rc);
+		rc = -EINVAL;
+	}
+#else
 	do {
 		rc = wait_event_interruptible_timeout(cmd_ack->wait,
 			!list_empty_careful(&cmd_ack->command_q.list),
@@ -722,7 +736,7 @@ int msm_post_event(struct v4l2_event *event, int timeout)
 		if (rc != -ERESTARTSYS)
 			break;
 	} while (1);
-
+#endif
 	if (list_empty_careful(&cmd_ack->command_q.list)) {
 		if (!rc) {
 			pr_err("%s: Timed out\n", __func__);
