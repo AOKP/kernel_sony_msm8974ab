@@ -51,6 +51,16 @@
 			<&msmgpio 96 0>; /* BT_DEV_WAKE */
 	};
 
+	bluesleep {
+		compatible = "qcom,bluesleep";
+		bt_host_wake = <&msmgpio 95 0>;
+		bt_ext_wake = <&msmgpio 96 0>;
+		bt_reg_on = <&pm8941_gpios 16 0>;
+		interrupt-parent = <&msmgpio>;
+		interrupts = <95 0>;
+		interrupt-names = "host_wake";
+	};
+
 	/* UART : BLSP10 */
 	serial@f9960000 {
 		compatible = "qcom,msm-lsuart-v14-irda";
