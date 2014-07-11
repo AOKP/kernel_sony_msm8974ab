@@ -399,10 +399,6 @@
 				GENERIC {
 					mount_angle = <180>;
 					sensor_rotation = <180>;
-					sensor_facing = <0>;
-					has_3a = <0>;
-					pll_num = <18>;
-					pll = <674 674 674 674 674 674 674 674 674 674 674 674 674 674 674 674 674 674>;
 					power_off {
 						commands =
 								"I2C_WRITE",
@@ -414,15 +410,15 @@
 								"CAM_VAF",
 								"EXIT";
 						CAM_VDIG =
-							<0 0xFFFFFFFF 0 1>;
-						CAM_VIO = <1 0xFFFFFFFF 0 1>;
+							<0 0xFFFFFFFF 1>;
+						CAM_VIO = <1 0xFFFFFFFF 1>;
 						CAM_VANA =
-							<2 0xFFFFFFFF 0 1>;
-						CAM_VAF = <3 0xFFFFFFFF 0 99>;
-						GPIO_RESET = <5 0x0 0 1>;
-						CAM_CLK = <6 0xFFFFFFFF 0 1>;
-						I2C_WRITE = <7 0x0100 0 100>;
-						EXIT = <8 0x0 0 0>;
+							<2 0xFFFFFFFF 1>;
+						CAM_VAF = <3 0xFFFFFFFF 99>;
+						GPIO_RESET = <5 0x0 1>;
+						CAM_CLK = <6 0xFFFFFFFF 1>;
+						I2C_WRITE = <7 0x0100 100>;
+						EXIT = <8 0x0 0>;
 					};
 					power_on {
 						commands =
@@ -433,22 +429,18 @@
 								"GPIO_RESET",
 								"CAM_CLK",
 								"EXIT";
-						CAM_VDIG = <0 1200 85000 1>;
-						CAM_VIO = <1 0 0 1>;
-						CAM_VANA = <2 2700 103000 1>;
-						CAM_VAF = <3 2800 106500 1>;
-						GPIO_RESET = <5 1 0 1>;
-						CAM_CLK = <6 0 0 1>;
-						EXIT = <8 0x0 0 0>;
+						CAM_VDIG = <0 1200 1>;
+						CAM_VIO = <1 0 1>;
+						CAM_VANA = <2 2700 1>;
+						CAM_VAF = <3 2800 1>;
+						GPIO_RESET = <5 1 1>;
+						CAM_CLK = <6 0 1>;
+						EXIT = <8 0x0 0>;
 					};
 				};
 				SOI08BS2 {
 					mount_angle = <180>;
 					sensor_rotation = <180>;
-					sensor_facing = <0>;
-					has_3a = <0>;
-					pll_num = <18>;
-					pll = <674 674 674 674 674 674 674 674 674 674 674 674 674 674 674 674 674 674>;
 					power_off {
 						commands =
 								"I2C_WRITE",
@@ -460,15 +452,15 @@
 								"CAM_VAF",
 								"EXIT";
 						CAM_VDIG =
-							<0 0xFFFFFFFF 0 1>;
-						CAM_VIO = <1 0xFFFFFFFF 0 1>;
+							<0 0xFFFFFFFF 1>;
+						CAM_VIO = <1 0xFFFFFFFF 1>;
 						CAM_VANA =
-							<2 0xFFFFFFFF 0 1>;
-						CAM_VAF = <3 0xFFFFFFFF 0 99>;
-						GPIO_RESET = <5 0x0 0 1>;
-						CAM_CLK = <6 0xFFFFFFFF 0 1>;
-						I2C_WRITE = <7 0x0100 0 100>;
-						EXIT = <8 0x0 0 0>;
+							<2 0xFFFFFFFF 1>;
+						CAM_VAF = <3 0xFFFFFFFF 99>;
+						GPIO_RESET = <5 0x0 1>;
+						CAM_CLK = <6 0xFFFFFFFF 1>;
+						I2C_WRITE = <7 0x0100 100>;
+						EXIT = <8 0x0 0>;
 					};
 					power_on {
 						commands =
@@ -479,13 +471,13 @@
 								"GPIO_RESET",
 								"CAM_CLK",
 								"EXIT";
-						CAM_VDIG = <0 1200 85000 1>;
-						CAM_VIO = <1 0 0 1>;
-						CAM_VANA = <2 2700 103000 1>;
-						CAM_VAF = <3 2800 106500 1>;
-						GPIO_RESET = <5 1 0 1>;
-						CAM_CLK = <6 0 0 1>;
-						EXIT = <8 0x0 0 0>;
+						CAM_VDIG = <0 1200 1>;
+						CAM_VIO = <1 0 1>;
+						CAM_VANA = <2 2700 1>;
+						CAM_VAF = <3 2800 1>;
+						GPIO_RESET = <5 1 1>;
+						CAM_CLK = <6 0 1>;
+						EXIT = <8 0x0 0>;
 					};
 				};
 			};
@@ -497,7 +489,7 @@
 			status = "ok";
 			qcom,slave-id = <0x6c 0x0000 0x0000>;
 			qcom,csiphy-sd-index = <2>;
-			qcom,csid-sd-index = <2>;
+			qcom,csid-sd-index = <0>;
 			qcom,mount-angle = <270>;
 			qcom,sensor-name = "sony_camera_1";
 			cam_vdig-supply = <&pm8941_l3>;
@@ -539,10 +531,6 @@
 				GENERIC {
 					mount_angle = <0>;
 					sensor_rotation = <0>;
-					sensor_facing = <1>;
-					has_3a = <0>;
-					pll_num = <18>;
-					pll = <104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104>;
 					power_off {
 						commands =
 								"I2C_WRITE",
@@ -553,14 +541,14 @@
 								"CAM_VDIG",
 								"EXIT";
 						CAM_VDIG =
-							<0 0xFFFFFFFF 0 98>;
-						CAM_VIO = <1 0xFFFFFFFF 0 1>;
+							<0 0xFFFFFFFF 98>;
+						CAM_VIO = <1 0xFFFFFFFF 1>;
 						CAM_VANA =
-							<2 0xFFFFFFFF 0 1>;
-						GPIO_RESET = <5 0x0 0 1>;
-						CAM_CLK = <6 0xFFFFFFFF 0 1>;
-						I2C_WRITE = <7 0x0100 0 100>;
-						EXIT = <8 0x0 0 0>;
+							<2 0xFFFFFFFF 1>;
+						GPIO_RESET = <5 0x0 1>;
+						CAM_CLK = <6 0xFFFFFFFF 1>;
+						I2C_WRITE = <7 0x0100 100>;
+						EXIT = <8 0x0 0>;
 					};
 					power_on {
 						commands =
@@ -570,21 +558,17 @@
 								"GPIO_RESET",
 								"CAM_CLK",
 								"EXIT";
-						CAM_VDIG = <0 1200 85000 1>;
-						CAM_VIO = <1 0 0 1>;
-						CAM_VANA = <2 2700 103000 1>;
-						GPIO_RESET = <5 1 0 1>;
-						CAM_CLK = <6 0 0 1>;
-						EXIT = <8 0x0 0 0>;
+						CAM_VDIG = <0 1200 1>;
+						CAM_VIO = <1 0 1>;
+						CAM_VANA = <2 2700 1>;
+						GPIO_RESET = <5 1 1>;
+						CAM_CLK = <6 0 1>;
+						EXIT = <8 0x0 0>;
 					};
 				};
 				LGI02BN1 {
 					mount_angle = <0>;
 					sensor_rotation = <0>;
-					sensor_facing = <1>;
-					has_3a = <0>;
-					pll_num = <18>;
-					pll = <104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104>;
 					power_off {
 						commands =
 								"I2C_WRITE",
@@ -595,14 +579,14 @@
 								"CAM_VDIG",
 								"EXIT";
 						CAM_VDIG =
-							<0 0xFFFFFFFF 0 98>;
-						CAM_VIO = <1 0xFFFFFFFF 0 1>;
+							<0 0xFFFFFFFF 98>;
+						CAM_VIO = <1 0xFFFFFFFF 1>;
 						CAM_VANA =
-							<2 0xFFFFFFFF 0 1>;
-						GPIO_RESET = <5 0x0 0 1>;
-						CAM_CLK = <6 0xFFFFFFFF 0 1>;
-						I2C_WRITE = <7 0x0100 0 100>;
-						EXIT = <8 0x0 0 0>;
+							<2 0xFFFFFFFF 1>;
+						GPIO_RESET = <5 0x0 1>;
+						CAM_CLK = <6 0xFFFFFFFF 1>;
+						I2C_WRITE = <7 0x0100 100>;
+						EXIT = <8 0x0 0>;
 					};
 					power_on {
 						commands =
@@ -612,21 +596,17 @@
 								"GPIO_RESET",
 								"CAM_CLK",
 								"EXIT";
-						CAM_VDIG = <0 1200 85000 1>;
-						CAM_VIO = <1 0 0 1>;
-						CAM_VANA = <2 2700 103000 1>;
-						GPIO_RESET = <5 1 0 1>;
-						CAM_CLK = <6 0 0 1>;
-						EXIT = <8 0x0 0 0>;
+						CAM_VDIG = <0 1200 1>;
+						CAM_VIO = <1 0 1>;
+						CAM_VANA = <2 2700 1>;
+						GPIO_RESET = <5 1 1>;
+						CAM_CLK = <6 0 1>;
+						EXIT = <8 0x0 0>;
 					};
 				};
 				SEM02BN1 {
 					mount_angle = <0>;
 					sensor_rotation = <0>;
-					sensor_facing = <1>;
-					has_3a = <0>;
-					pll_num = <18>;
-					pll = <104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104 104>;
 					power_off {
 						commands =
 								"I2C_WRITE",
@@ -637,14 +617,14 @@
 								"CAM_VDIG",
 								"EXIT";
 						CAM_VDIG =
-							<0 0xFFFFFFFF 0 98>;
-						CAM_VIO = <1 0xFFFFFFFF 0 1>;
+							<0 0xFFFFFFFF 98>;
+						CAM_VIO = <1 0xFFFFFFFF 1>;
 						CAM_VANA =
-							<2 0xFFFFFFFF 0 1>;
-						GPIO_RESET = <5 0x0 0 1>;
-						CAM_CLK = <6 0xFFFFFFFF 0 1>;
-						I2C_WRITE = <7 0x0100 0 100>;
-						EXIT = <8 0x0 0 0>;
+							<2 0xFFFFFFFF 1>;
+						GPIO_RESET = <5 0x0 1>;
+						CAM_CLK = <6 0xFFFFFFFF 1>;
+						I2C_WRITE = <7 0x0100 100>;
+						EXIT = <8 0x0 0>;
 					};
 					power_on {
 						commands =
@@ -654,12 +634,12 @@
 								"GPIO_RESET",
 								"CAM_CLK",
 								"EXIT";
-						CAM_VDIG = <0 1200 85000 1>;
-						CAM_VIO = <1 0 0 1>;
-						CAM_VANA = <2 2700 103000 1>;
-						GPIO_RESET = <5 1 0 1>;
-						CAM_CLK = <6 0 0 1>;
-						EXIT = <8 0x0 0 0>;
+						CAM_VDIG = <0 1200 1>;
+						CAM_VIO = <1 0 1>;
+						CAM_VANA = <2 2700 1>;
+						GPIO_RESET = <5 1 1>;
+						CAM_CLK = <6 0 1>;
+						EXIT = <8 0x0 0>;
 					};
 				};
 			};
