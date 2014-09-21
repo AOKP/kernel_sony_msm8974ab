@@ -98,6 +98,7 @@
 #define MXM_LCD_Y_MIN               240
 #define MXM_LCD_SIZE_MAX            0x7FFF
 #define MXM_NUM_SENSOR_MAX          40
+#define MXM_IRQ_RESET_TIMEOUT       1000
 
 /* Timings */
 #define MXM_WAIT_MIN_US             1000
@@ -302,6 +303,7 @@ struct data {
 	struct mutex i2c_mutex;
 	struct mutex report_mutex;
 	struct semaphore report_sem;
+	struct semaphore reset_sem;
 	struct report_reader report_readers[MXM_REPORT_READERS_MAX];
 	u8 report_readers_outstanding;
 
@@ -789,7 +791,7 @@ static void invalidate_all_fingers(struct data *ts)
 	ts->list_finger_ids = 0;
 }
 
-static void post_process_reset(struct data *ts)
+static void reinit_chip_settings(struct data *ts)
 {
 	u16 cmd_buf[] = {MXM_CMD_ID_SET_POWER_MODE,
 			 MXM_ONE_SIZE_CMD,
@@ -857,8 +859,11 @@ static void process_report(struct data *ts, u16 *buf)
 		status_report = (struct max1187x_system_status_report *) buf;
 
 		if (status_report->value & MXM_STATUS_EXT_RESET ||
-		    status_report->value & MXM_STATUS_SOFT_RESET)
-			post_process_reset(ts);
+		    status_report->value & MXM_STATUS_SOFT_RESET) {
+			reinit_chip_settings(ts);
+			if (status_report->value & MXM_STATUS_EXT_RESET)
+				up(&ts->reset_sem);
+		}
 		goto end;
 	}
 
@@ -913,7 +918,11 @@ static irqreturn_t irq_handler_soft(int irq, void *context)
 		process_report(ts, ts->rx_packet);
 		propagate_report(ts, 0, ts->rx_packet);
 	} else {
-		reset_power(ts);
+		if (down_timeout(&ts->reset_sem,
+		    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) == 0)
+			reset_power(ts);
+		else
+			dev_err(&ts->client->dev, "irq reset timeout\n");
 	}
 
 	mutex_unlock(&ts->i2c_mutex);
@@ -987,8 +996,10 @@ static int reset_power(struct data *ts)
 
 	dev_dbg(&ts->client->dev, "power on reset\n");
 exit:
-	if (ret)
+	if (ret) {
 		dev_err(&ts->client->dev, "Failed to power on reset\n");
+		up(&ts->reset_sem);
+	}
 	return ret;
 }
 
@@ -998,6 +1009,12 @@ static ssize_t power_on_reset_store(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct data *ts = i2c_get_clientdata(client);
 	int ret;
+
+	if (down_timeout(&ts->reset_sem,
+	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
+		dev_err(&ts->client->dev, "irq reset timeout\n");
+		goto exit;
+	}
 
 	mutex_lock(&ts->i2c_mutex);
 	ret = reset_power(ts);
@@ -2224,6 +2241,7 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	mutex_init(&ts->report_mutex);
 	sema_init(&ts->report_sem, 1);
 	sema_init(&ts->sema_rbcmd, 1);
+	sema_init(&ts->reset_sem, 1);
 	ts->button0 = 0;
 	ts->button1 = 0;
 	ts->button2 = 0;
@@ -2324,7 +2342,7 @@ static int probe(struct i2c_client *client, const struct i2c_device_id *id)
 	/* Setup IRQ and handler */
 	ret = request_threaded_irq(client->irq,
 			irq_handler_hard, irq_handler_soft,
-			IRQF_TRIGGER_FALLING, client->name, ts);
+			IRQF_TRIGGER_FALLING | IRQF_ONESHOT, client->name, ts);
 	if (ret) {
 		dev_err(dev, "Failed to setup IRQ handler");
 		ret = -EIO;
@@ -2601,6 +2619,12 @@ static void set_suspend_mode(struct data *ts)
 
 	dev_info(&ts->client->dev, "%s\n", __func__);
 
+	if (down_timeout(&ts->reset_sem,
+	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
+		dev_err(&ts->client->dev, "irq reset timeout\n");
+		return;
+	}
+
 	ts->is_suspended = true;
 
 	if (device_may_wakeup(&ts->client->dev)) {
@@ -2617,6 +2641,8 @@ static void set_suspend_mode(struct data *ts)
 		vreg_suspend(ts, true);
 	}
 
+	up(&ts->reset_sem);
+
 	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
 	return;
 }
@@ -2625,6 +2651,12 @@ static void set_resume_mode(struct data *ts)
 {
 	dev_info(&ts->client->dev, "%s\n", __func__);
 
+	if (down_timeout(&ts->reset_sem,
+	    msecs_to_jiffies(MXM_IRQ_RESET_TIMEOUT)) != 0) {
+		dev_err(&ts->client->dev, "irq reset timeout\n");
+		return;
+	}
+
 	vreg_suspend(ts, false);
 	usleep_range(MXM_WAIT_MIN_US, MXM_WAIT_MAX_US);
 
@@ -2632,9 +2664,16 @@ static void set_resume_mode(struct data *ts)
 		disable_irq(ts->client->irq);
 		reset_power(ts);
 		enable_irq(ts->client->irq);
+	} else {
+		mutex_lock(&ts->i2c_mutex);
+		reinit_chip_settings(ts);
+		mutex_unlock(&ts->i2c_mutex);
 	}
 
 	ts->is_suspended = false;
+
+	if (!ts->pdata->enable_resume_por)
+		up(&ts->reset_sem);
 
 	dev_dbg(&ts->client->dev, "%s: Exit\n", __func__);
 
